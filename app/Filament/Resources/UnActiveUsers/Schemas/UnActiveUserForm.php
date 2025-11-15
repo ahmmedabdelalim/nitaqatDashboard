@@ -26,8 +26,8 @@ class UnActiveUserForm
 
 
             Select::make('role')
-                ->label('Role')
-                ->options([
+            ->label('Role')
+            ->options([
                     'user' => 'User',
                     'admin' => 'Admin',
                 ])
