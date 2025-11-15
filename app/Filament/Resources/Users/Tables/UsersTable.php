@@ -28,6 +28,7 @@ class UsersTable
                 IconColumn::make('calc')->boolean(),
                 IconColumn::make('reports')->boolean(),
                 IconColumn::make('upload')->boolean(),
+                IconColumn::make('saudization_percentage')->boolean(),
                 TextColumn::make('created_at')
                     ->dateTime('Y-m-d H:i')
                     ->sortable(),

@@ -56,6 +56,9 @@ class UserForm
             Toggle::make('upload')
                 ->label('Upload Access')
                 ->default(false),
+            Toggle::make('saudization_percentage')
+                ->label('Saudization Percentage Access')
+                ->default(false),
 
             ]);
     }

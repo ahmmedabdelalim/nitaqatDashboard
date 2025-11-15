@@ -25,7 +25,8 @@ class User extends Authenticatable
         'role', // user or admin
         'calc', // 0 or 1
         'reports', // 0 or 1
-        'upload' // 0 or 1
+        'upload', // 0 or 1
+        'saudization_percentage' // 0 or 1
     ];
 
     /**
