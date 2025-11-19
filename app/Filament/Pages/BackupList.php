@@ -14,8 +14,8 @@ use Filament\Actions\BulkAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
 use UnitEnum;
-
 
 class BackupList extends Page implements HasTable
 {
@@ -24,14 +24,13 @@ class BackupList extends Page implements HasTable
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
     protected static UnitEnum|string|null $navigationGroup = 'Database Tools';
 
-    protected  string $view = 'filament.pages.backup-list';
+    protected string $view = 'filament.pages.backup-list';
     protected static ?string $title = 'Backups';
 
     public function table(Table $table): Table
     {
-        // we use ->records() for custom (non-eloquent) data
         return $table
-            ->records(fn (?string $sortColumn = null, ?string $sortDirection = null): Collection => $this->getBackupRecords($sortColumn, $sortDirection))
+            ->records(fn (?string $sortColumn, ?string $sortDirection) => $this->getBackupRecords($sortColumn, $sortDirection))
             ->columns([
                 TextColumn::make('name')->label('File Name')->searchable(),
                 TextColumn::make('size')
@@ -41,6 +40,8 @@ class BackupList extends Page implements HasTable
                     ->label('Created At')
                     ->formatStateUsing(fn ($state) => $state instanceof Carbon ? $state->toDateTimeString() : $state),
             ])
+            ->paginationPageOptions([5, 10, 25, 50])  // Selectable options
+            ->defaultPaginationPageOption(10)         // Default per page
             ->actions([
                 Action::make('download')
                     ->label('Download')
@@ -52,15 +53,11 @@ class BackupList extends Page implements HasTable
                     ->label('Delete')
                     ->icon('heroicon-o-trash')
                     ->requiresConfirmation()
-                    ->action(function (array $record, $livewire) {
-                        // delete file
+                    ->action(function (array $record) {
                         Storage::disk('local')->delete($record['path']);
                     })
-                    ->after(function () {
-                        return redirect(request()->header('Referer'));
-                    })
+                    ->after(fn () => redirect(request()->header('Referer')))
                     ->successNotificationTitle('Backup deleted.')
-
             ])
             ->bulkActions([
                 BulkAction::make('delete_selected')
@@ -76,31 +73,18 @@ class BackupList extends Page implements HasTable
             ]);
     }
 
-    /**
-     * Build records collection for the Filament table.
-     *
-     * keys must be unique and consistent (they serve as record IDs).
-     */
-    protected function getBackupRecords(?string $sortColumn = null, ?string $sortDirection = null): Collection
+    protected function getBackupRecords(?string $sortColumn, ?string $sortDirection): LengthAwarePaginator
     {
         $files = collect(Storage::disk('local')->files('laravel'))
-            ->mapWithKeys(function (string $path) {
-                $size = Storage::disk('local')->size($path);
-                $ts = Storage::disk('local')->lastModified($path);
+            ->map(fn ($path) => [
+                'id'         => $path,
+                'name'       => basename($path),
+                'path'       => $path,
+                'size'       => Storage::disk('local')->size($path),
+                'created_at' => Carbon::createFromTimestamp(Storage::disk('local')->lastModified($path)),
+            ]);
 
-                return [
-                    $path => [
-                        'id' => $path,
-                        'name' => basename($path),
-                        'path' => $path,
-                        'size' => $size,
-                        'created_at' => Carbon::createFromTimestamp($ts),
-                    ],
-                ];
-            });
-
-        // simple sorting example (Filament will inject sort column & direction into records())
-        if (filled($sortColumn)) {
+        if ($sortColumn) {
             $files = $files->sortBy(
                 fn ($item) => $item[$sortColumn] ?? null,
                 SORT_REGULAR,
@@ -108,6 +92,17 @@ class BackupList extends Page implements HasTable
             );
         }
 
-        return $files;
+        // PAGINATION HERE 🚀
+        $page = $this->getTablePage();
+        $perPage = $this->getTableRecordsPerPage();
+        $paginated = $files->forPage($page, $perPage);
+
+        return new LengthAwarePaginator(
+            $paginated,
+            $files->count(),
+            $perPage,
+            $page,
+            ['path' => request()->url()]
+        );
     }
 }
