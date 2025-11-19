@@ -66,16 +66,18 @@ class BackupList extends Page implements HasTable
                         foreach ($records as $r) {
                             Storage::disk('local')->delete($r['path']);
                         }
-                        $livewire->notify('success', 'Selected backups deleted.');
-                        $livewire->emit('refreshTable');
+
                     })
-                    ->requiresConfirmation(),
+                    ->requiresConfirmation()
+                    ->after(fn () => redirect(request()->header('Referer')))
+                    ->successNotificationTitle('Backup deleted.')
+                    ,
             ]);
     }
 
     protected function getBackupRecords(?string $sortColumn, ?string $sortDirection): LengthAwarePaginator
     {
-        $files = collect(Storage::disk('local')->files('laravel'))
+        $files = collect(Storage::disk('local')->files('Laravel'))
             ->map(fn ($path) => [
                 'id'         => $path,
                 'name'       => basename($path),
