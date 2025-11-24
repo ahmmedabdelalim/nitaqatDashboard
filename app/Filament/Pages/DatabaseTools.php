@@ -53,12 +53,13 @@ class DatabaseTools extends Page
     public function resetTable($table)
     {
         if ($this->enableBackup) {
-            $this->exportTableExcel($table, backup: true);
+           return $this->exportTableExcel($table, backup: true);
         }
 
         DB::table($table)->truncate();
 
-        $this->notify('success', "Table '{$table}' has been reset successfully.");
+        // $this->successNotificationTitle("Table '{$table}' has been reset successfully.");
+
     }
 
     public function exportTableCsv($table): StreamedResponse
