@@ -61,15 +61,7 @@
                                 <td class="px-8 py-6 text-base">
                                     <div class="flex items-center space-x-3">
 
-                                        <x-filament::button
-                                            size="sm"
-                                            color="primary"
-                                            icon="heroicon-o-document-arrow-down"
-                                            wire:click="exportTableCsv('{{ $table }}')"
-                                            class="shadow-sm hover:shadow-md transform hover:-translate-y-0.5 transition"
-                                        >
-                                            CSV
-                                        </x-filament::button>
+
 
                                         <x-filament::button
                                             size="sm"
@@ -78,7 +70,7 @@
                                             wire:click="exportTableExcel('{{ $table }}')"
                                             class="shadow-sm hover:shadow-md transform hover:-translate-y-0.5 transition"
                                         >
-                                            Excel
+                                            Export 
                                         </x-filament::button>
 
                                         <x-filament::button

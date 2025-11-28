@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Jobs\RunBackupJob;
 use App\Models\BackupSetting;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
@@ -12,7 +13,7 @@ class RunConfiguredBackup extends Command
     /**
      * The name and signature of the console command.
      *
-     * @var string 
+     * @var string
      */
     protected $signature = 'backup:run-configured';
     protected $description = 'Run backup if the configured time/frequency matches now';
@@ -21,7 +22,7 @@ class RunConfiguredBackup extends Command
     /**
      * Execute the console command.
      */
-     public function handle()
+    public function handle()
     {
         $settings = BackupSetting::first();
         if (! $settings || ! $settings->enabled) {
@@ -29,34 +30,28 @@ class RunConfiguredBackup extends Command
             return 0;
         }
 
-        $now = now(); // use app timezone
+        $now = now();
         $timeNow = $now->format('H:i');
 
-        // handle frequencies
         if ($settings->frequency === 'every_minute') {
             $run = true;
         } elseif ($settings->frequency === 'every_15_minutes') {
             $run = ($now->minute % 15) === 0;
         } elseif ($settings->frequency === 'weekly') {
-            $expectedDay = (int) $settings->day_of_week;
-            $run = ($now->dayOfWeek === $expectedDay && $timeNow === $settings->time);
+            $run = ($now->dayOfWeek === (int)$settings->day_of_week && $timeNow === $settings->time);
         } else { // daily
             $run = ($timeNow === $settings->time);
         }
 
-        if ($run) {
-            Log::info('Configured backup starting at '.$now);
-            try {
-               Artisan::call('backup:run');
-                Log::info('Configured backup finished at '.now());
-                $this->info('Backup completed.');
-            } catch (\Throwable $e) {
-                Log::error('Configured backup failed: '.$e->getMessage());
-                $this->error('Backup failed: '.$e->getMessage());
-            }
-        } else {
-            $this->info('No backup scheduled at '.$timeNow);
+        if (! $run) {
+            $this->info('No backup scheduled for '.$timeNow);
+            return 0;
         }
+        // 🚀 Dispatch as Queue (background)
+        RunBackupJob::dispatch();
+
+        Log::info('Backup dispatched to queue at '.$now);
+        $this->info('Backup queued successfully.');
 
         return 0;
     }

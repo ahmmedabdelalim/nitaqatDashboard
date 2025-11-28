@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages;
 
+use App\Jobs\ExportTableJob;
 use Filament\Pages\Page;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -11,6 +12,8 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Filament\Support\Icons\Heroicon;
 use UnitEnum;
 use BackedEnum;
+use Filament\Notifications\Notification;
+
 class DatabaseTools extends Page
 {
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
@@ -57,9 +60,7 @@ class DatabaseTools extends Page
         }
 
         DB::table($table)->truncate();
-
-        // $this->successNotificationTitle("Table '{$table}' has been reset successfully.");
-
+        Notification::make()->title('Backup settings saved')->success()->send();
     }
 
     public function exportTableCsv($table): StreamedResponse
@@ -84,53 +85,15 @@ class DatabaseTools extends Page
     }
 
     public function exportTableExcel($table, $backup = false)
-{
-    $filename = ($backup ? 'BACKUP_' : '') . $table . '_' . now()->format('Y-m-d_H-i-s') . '.xlsx';
+    {
+        // Dispatch Job
+        $user = auth()->user();
 
-    $columns = Schema::getColumnListing($table);
-    $records = DB::table($table)->get();
+        ExportTableJob::dispatch($table, $backup , $user);
 
-    $spreadsheet = new Spreadsheet();
-    $sheet = $spreadsheet->getActiveSheet();
-
-    // Write header row
-    foreach ($columns as $colIndex => $name) {
-        $sheet->setCellValue($this->columnLetter($colIndex + 1).'1', $name);
+        Notification::make()->title('Export job dispatched')->success()->send();
     }
 
-    // Write data rows
-    foreach ($records as $rowIndex => $row) {
-        $values = array_values((array)$row);   // convert to indexed array (fixes the error)
 
-        foreach ($values as $colIndex => $value) {
-            $sheet->setCellValue(
-                $this->columnLetter($colIndex + 1) . ($rowIndex + 2),
-                $value
-            );
-        }
-    }
-
-    $writer = new Xlsx($spreadsheet);
-
-    $tempFile = tempnam(sys_get_temp_dir(), 'xlsx');
-    $writer->save($tempFile);
-
-    return response()
-        ->download($tempFile, $filename)
-        ->deleteFileAfterSend(true);
-}
-
-private function columnLetter($index)
-{
-    $letter = '';
-
-    while ($index > 0) {
-        $remainder = ($index - 1) % 26;
-        $letter = chr(65 + $remainder) . $letter;
-        $index = intval(($index - $remainder) / 26);
-    }
-
-    return $letter;
-}
 
 }

@@ -8,10 +8,6 @@ Route::get('/', function () {
 });
 
 
-// Route::get('/backups/download/{file}', function ($file) {
-//     $file = urldecode($file);
-//     return Storage::download($file);
-// });
 
 Route::get('/backup/download', function () {
     $file = request('file');
@@ -24,3 +20,12 @@ Route::get('/backups/delete/{file}', function ($file) {
     return redirect()->back()->with('success', 'Backup deleted successfully!');
 });
 
+Route::get('/download/export/{filename}', function ($filename) {
+    $path = '/exports/' . $filename;
+
+    if (!Storage::disk('public')->exists($path)) {
+        abort(404, 'File not found');
+    }
+
+    return Storage::disk('public')->download($path);
+})->name('download.export');
