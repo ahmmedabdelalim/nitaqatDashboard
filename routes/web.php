@@ -14,6 +14,13 @@ Route::get('/backup/download', function () {
     return Storage::disk('local')->download($file);
 })->name('backup.download');
 
+
+Route::get('table/backup/download', function () {
+    $file = request('file');
+    return Storage::disk('public')->download($file);
+})->name('table.backup.download');
+
+
 Route::get('/backups/delete/{file}', function ($file) {
     $file = urldecode($file);
     Storage::delete($file);

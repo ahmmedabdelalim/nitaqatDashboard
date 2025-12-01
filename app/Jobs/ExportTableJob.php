@@ -64,20 +64,15 @@ class ExportTableJob implements ShouldQueue
         $writer = new Xlsx($spreadsheet);
 
         // 📁 نحفظ مباشرة في storage/exports/
-        $path = 'public/exports/' . $filename; // ← بدون public/
-        Storage::makeDirectory('exports'); // لو غير موجود ينشئه
+        $path = 'public/' . $filename; // ← بدون public/
+        // Storage::makeDirectory('exports'); // لو غير موجود ينشئه
         $writer->save(storage_path('app/' . $path)); // ← حفظ فعلي
 
         Notification::make()
             ->title("Table {$this->table} exported successfully")
             ->success()
-            ->body('Click below to download your file.')
-            ->actions([
-                Action::make('download')
-                    ->label('Download File')
-                    ->url(route('download.export', ['filename' => $filename]))  // ⬅ رابط للتحميل
-                    ->openUrlInNewTab(),
-            ])
+            ->body('Go to table backup list to download your file.')
+
             ->sendToDatabase($this->user);
     }
 
