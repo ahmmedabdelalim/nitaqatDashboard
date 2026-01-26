@@ -25,12 +25,12 @@ class UserForm
                 ->required()
                 ->maxLength(255),
 
-            // TextInput::make('password')
-            //     ->label('Password')
-            //     ->password()
-            //     ->dehydrateStateUsing(fn ($state) => filled($state) ? bcrypt($state) : null)
-            //     ->required(fn (string $context): bool => $context === 'create')
-            //     ->maxLength(255),
+            TextInput::make('password')
+                ->label('Password')
+                ->password()
+                ->dehydrateStateUsing(fn ($state) => filled($state) ? bcrypt($state) : null)
+                ->required(fn (string $context): bool => $context === 'create')
+                ->maxLength(255),
 
             Select::make('role')
                 ->label('Role')

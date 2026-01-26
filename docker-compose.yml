@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  nitaqat-dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nitaqat-dashboard
+    restart: unless-stopped
+    networks:
+      - nitaxat
+    # command: bash -c "php artisan serve  --host=172.17.0.1 --port=8000 & php artisan reverb:start --host=172.17.0.1 --port=8008"
+    # command: bash -c "php artisan serve  --host=0.0.0.0 --port 8000"
+    ports:
+      - "8005:8005"
+    volumes:
+      - ./:/var/www/html
+      
+networks:
+  nitaxat:
+    driver: bridge
