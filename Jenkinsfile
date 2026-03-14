@@ -16,7 +16,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 git branch: "${BRANCH}",
-                url: 'https://github.com/ahmmedabdelalim/nitaqatDashboard.git',
+                url: 'https://github.com/ahmmedabdelalim/nitaqatDashboard.git'
                 credentialsId: 'github-token'
             }
         }
