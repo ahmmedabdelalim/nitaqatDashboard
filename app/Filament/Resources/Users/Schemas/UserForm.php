@@ -33,7 +33,7 @@ class UserForm
                 ->maxLength(255),
 
             Select::make('role')
-                ->label('Role')
+                ->label('User Role')
                 ->options([
                     'user' => 'User',
                     'admin' => 'Admin',
