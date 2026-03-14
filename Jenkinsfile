@@ -13,7 +13,7 @@ pipeline {
     environment {
         SSH_USER = "root"
         SSH_HOST = "72.60.36.202"
-        SSH_KEY_ID = "nitaqat-jenkins-key"
+        SSH_KEY_ID = "root"
         BRANCH = "main"
     }
 
@@ -42,7 +42,7 @@ pipeline {
                 
             // }
             steps {
-                sshagent(['nitaqat-jenkins-key']) {
+                sshagent(['root']) {
                     sh """
                     ssh $SSH_USER@$SSH_HOST '
                         cd /var/www/nitaqatDashboard &&
