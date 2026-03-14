@@ -46,7 +46,7 @@ class UserForm
                 ->default(true),
 
             Toggle::make('calc')
-                ->label('Calc Access')
+                ->label('Calculations Access')
                 ->default(false),
 
             Toggle::make('reports')
