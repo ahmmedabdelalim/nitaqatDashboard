@@ -26,7 +26,7 @@ class UserForm
                 ->maxLength(255),
 
             TextInput::make('password')
-                ->label('Password')
+                ->label('User Password')
                 ->password()
                 ->dehydrateStateUsing(fn ($state) => filled($state) ? bcrypt($state) : null)
                 ->required(fn (string $context): bool => $context === 'create')
