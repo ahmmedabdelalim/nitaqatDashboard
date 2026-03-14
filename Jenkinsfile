@@ -1,4 +1,5 @@
 pipeline {
+    agent any
     // agent{
     //     docker {
     //         // image 'nitaqatdashboard-nitaqat-dashboard:latest'  // replace with the image name you built
