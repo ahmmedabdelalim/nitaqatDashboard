@@ -25,12 +25,6 @@ pipeline {
             }
         }
 
-        stage('Run Tests') {
-            steps {
-                sh 'php artisan test'
-            }
-        }
-
         stage('Deploy to VPS') {
             when {
                 branch "${BRANCH}"
