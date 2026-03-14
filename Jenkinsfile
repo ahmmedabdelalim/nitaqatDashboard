@@ -37,7 +37,9 @@ pipeline {
 
         stage('Deploy to VPS') {
             when {
-                branch "${BRANCH}"
+                when {
+                    expression { env.GIT_BRANCH == 'origin/main' }
+                }
             }
             steps {
                 sshagent(['nitaqat-jenkins-key']) {
