@@ -1,5 +1,11 @@
 pipeline {
-    agent any
+    agent{
+        docker {
+            image 'nitaqatdashboard-nitaqat-dashboard:latest'  // replace with the image name you built
+            args '-v $WORKSPACE:/var/www/html -w /var/www/html -v /var/lib/jenkins/.ssh:/root/.ssh:ro'
+        }
+    }
+    
 
     environment {
         SSH_USER = "root"
@@ -16,12 +22,11 @@ pipeline {
         stage('Checkout') {
             steps {
                 git branch: "${BRANCH}",
-                url: 'git@github.com:ahmmedabdelalim/nitaqatDashboard.git',
-                credentialsId: 'github-token'
+                    url: 'git@github.com:ahmmedabdelalim/nitaqatDashboard.git'
             }
         }
 
-        stage('Install Dependencies') {
+       stage('Install Dependencies') {
             steps {
                 sh 'composer install --no-dev --optimize-autoloader'
             }
