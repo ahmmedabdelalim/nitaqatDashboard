@@ -1,8 +1,10 @@
 pipeline {
     agent{
         docker {
-            image 'nitaqatdashboard-nitaqat-dashboard:latest'  // replace with the image name you built
-            args '-v $WORKSPACE:/var/www/html -w /var/www/html -v /var/lib/jenkins/.ssh:/root/.ssh:ro'
+            // image 'nitaqatdashboard-nitaqat-dashboard:latest'  // replace with the image name you built
+            // args '-v $WORKSPACE:/var/www/html -w /var/www/html -v /var/lib/jenkins/.ssh:/root/.ssh:ro'
+            image 'composer:2.7'   // lightweight official composer image
+            args '-v /var/lib/jenkins/.ssh:/root/.ssh:ro'
         }
     }
     
@@ -22,7 +24,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 git branch: "${BRANCH}",
-                    url: 'git@github.com:ahmmedabdelalim/nitaqatDashboard.git'
+                url: 'git@github.com:ahmmedabdelalim/nitaqatDashboard.git'
             }
         }
 
