@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        SERVER = "root@72.60.36.202"
+        SERVER = "deploy@72.60.36.202"
         PROJECT_PATH = "/var/www/nitaqatDashboard"
     }
 
