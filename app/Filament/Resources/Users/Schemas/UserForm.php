@@ -15,7 +15,7 @@ class UserForm
         return $schema
             ->components([
             TextInput::make('name')
-                ->label('Name')
+                ->label('User Name ') 
                 ->required()
                 ->maxLength(255),
 
@@ -46,7 +46,7 @@ class UserForm
                 ->default(true),
 
             Toggle::make('calc')
-                ->label('Calculations Access')
+                ->label('Calculation Access')
                 ->default(false),
 
             Toggle::make('reports')
