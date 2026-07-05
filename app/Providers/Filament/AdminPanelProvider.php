@@ -30,9 +30,9 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->login()
             ->brandLogo(asset('images/logo.png'))   // ✅ sets logo in login page & header
-            ->brandLogoHeight('Nitaqat')              // optional: adjust size
+            ->brandLogoHeight('3rem')              // optional: adjust size
             ->brandName("Nitaqat Admin Panel")              // optional: text beside logo
-            ->favicon(asset('images/logo.png'))   // ✅ sets browser tab icon
+            // ->favicon(asset('images/logo.png'))   // ✅ sets browser tab icon
             ->colors([
                 'primary' => Color::Amber,
             ])
