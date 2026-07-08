@@ -8,11 +8,16 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Filament\Auth\MultiFactor\Email\Contracts\HasEmailAuthentication;
+use Filament\Auth\MultiFactor\Email\Concerns\InteractsWithEmailAuthentication;
 
-class User extends Authenticatable implements FilamentUser
+
+
+class User extends Authenticatable implements FilamentUser ,HasEmailAuthentication, MustVerifyEmail
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, InteractsWithEmailAuthentication;
 
     /**
      * The attributes that are mass assignable.
