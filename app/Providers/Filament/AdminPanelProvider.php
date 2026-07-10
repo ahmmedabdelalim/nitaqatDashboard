@@ -50,7 +50,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->multiFactorAuthentication([
                 EmailAuthentication::make()
-                ->codeExpiryMinutes(2),
+                ->codeExpiryMinutes(5),
             ], isRequired: true)
            
             ->middleware([
